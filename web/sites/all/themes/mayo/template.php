@@ -257,3 +257,26 @@ function mayo_page_alter($page) {
   );
   drupal_add_html_head($viewport, "viewport");
 }
+
+function mytheme_last_edit_info($nid) {
+  if (isset($nid)) {
+    $result = db_query('SELECT n.changed, u.name, u.uid 
+                        FROM {node} n, {users} u
+                        WHERE n.status=1 AND n.uid = u.uid 
+                        AND n.nid = %d', $nid );
+    if ($nodeinfo = db_fetch_object($result)) {
+      $name = $nodeinfo->name;
+      if (user_access('access user profiles')) {
+        $author = l($name, 'user/'. $nodeinfo->uid,
+          array('title' => t('View user profile.')));
+      } else {
+        $author = check_plain($name);
+      }
+      $output = '<div class="info">'.
+        t('Submitted by %a. Last edited on %b.',
+          array('%a' => $author, '%b' =>
+            format_date($nodeinfo->changed))) .'</div>';
+      return $output;
+    }
+  }
+}

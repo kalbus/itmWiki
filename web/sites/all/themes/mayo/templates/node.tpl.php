@@ -108,4 +108,3 @@
 </div>
 
 <?php print render($content['comments']); ?> <!-- added -->
-
